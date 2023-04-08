@@ -1,0 +1,5 @@
+from .obtain_auth_token_view import ObtainAuthTokenView
+from .signup_view import SignUpView
+from .change_password_view import ChangePasswordView
+from .user_activation_view import UserActivationView
+from .resend_activation_view import ResendActivationView

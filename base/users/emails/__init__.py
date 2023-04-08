@@ -1,0 +1,3 @@
+from .reset_password_email import ResetPasswordEmail
+from .activation_email import ActivationEmail
+from .confirmation_email import ConfirmationEmail

@@ -76,6 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "base.wsgi.application"
 
+AUTH_USER_MODEL = "base.User"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -162,5 +163,5 @@ MIGRATION_PATH_DICT = {
 ENVIRONMENT = config("ENVIRONMENT", default="LOCAL")
 MIGRATION_PATH = MIGRATION_PATH_DICT.get(ENVIRONMENT, "migrations_dev")
 MIGRATION_MODULES = {
-    "core_insurance": "core_insurance." + MIGRATION_PATH,
+    "base": "base." + MIGRATION_PATH,
 }
