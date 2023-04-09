@@ -13,13 +13,3 @@ class ErrorHandledSerializerMixin(object):
             self.code = GeneralCodes.SUCCESS
 
         return is_valid
-
-    @property
-    def errors(self):
-        super_errors = super().errors
-        errors = {}
-
-        for error in super_errors:
-            errors[error] = super_errors[error][0]
-
-        return errors

@@ -27,6 +27,9 @@ class SignUpView(APIView):
             )
 
         serializer.save()
+        referral_code = serializer.validated_data("referral_code")
+        serializer.user.record_referral(referral_code=referral_code)
+
         return Response(
             {
                 "code": GeneralCodes.SUCCESS,

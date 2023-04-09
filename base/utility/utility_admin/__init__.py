@@ -1,0 +1,1 @@
+from .list_per_page_mixin import AdminListPerPageMixin

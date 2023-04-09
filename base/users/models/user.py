@@ -4,16 +4,23 @@ from smtplib import SMTPException
 # Django Imports
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.db.models import IntegerField, Sum
+from django.db.models.functions import Coalesce
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
+# REST Framework Imports
+from rest_framework.authtoken.models import Token
+
 # First Party Imports
 from base.users.emails import ActivationEmail, ConfirmationEmail
-from base.users.fields import LowercaseEmailField, LowercaseUsernameField
+from base.users.fields import LowercaseEmailField
 from base.users.managers import UserManager
-from base.users.validators import ASCIIUsernameValidator
 from base.utility.utility_models import AbstractModel
+
+from .loyalty_program import LoyaltyProgram
+from .referral import Referral
 
 
 class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
@@ -29,32 +36,30 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
         unique=True,
         verbose_name=_("Email"),
     )
-    username = LowercaseUsernameField(
-        max_length=30,
-        unique=True,
-        validators=[ASCIIUsernameValidator()],
-        verbose_name=_("Username"),
-    )
-    first_name = models.CharField(max_length=30, verbose_name=_("First name"))
-    last_name = models.CharField(max_length=30, verbose_name=_("Last Name"))
-    gender = models.IntegerField(choices=GenderTypes.choices, verbose_name=_("Gender"))
+    first_name = models.CharField(null=True, max_length=30, verbose_name=_("First name"))
+    last_name = models.CharField(null=True, max_length=30, verbose_name=_("Last Name"))
+    gender = models.IntegerField(null=True, choices=GenderTypes.choices, verbose_name=_("Gender"))
 
     # Dates
     last_login = models.DateTimeField(auto_now=True, verbose_name=_("Last Login"))
     last_logout = models.DateTimeField(blank=True, null=True, verbose_name=_("Last Logout"))
     last_action = models.DateTimeField(blank=True, null=True, verbose_name=_("Last Action"))
-    birth_date = models.DateTimeField(verbose_name=_("Birth Date"))
+    birth_date = models.DateField(null=True, verbose_name=_("Birth Date"))
 
     # Bool Flags
     is_staff = models.BooleanField(default=False, verbose_name=_("Is Staff"))
     is_guest = models.BooleanField(default=False, verbose_name=_("Is Guest"))
+    is_seller = models.BooleanField(default=False, verbose_name=_("Is Seller"))
+    is_buyer = models.BooleanField(default=True, verbose_name=_("Is Buyer"))
     is_suspended = models.BooleanField(default=False, verbose_name=_("Is Suspended"))
     is_email_verified = models.BooleanField(default=False, verbose_name=_("Is Email Verified"))
     is_online = models.BooleanField(default=False, verbose_name=_("Online"))
 
+    # Addons
+    referral_code = models.CharField(max_length=20, verbose_name=_("Referral Code"))
+
     EMAIL_FIELD = "email"
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email"]
+    USERNAME_FIELD = "email"
 
     objects = UserManager()
 
@@ -107,4 +112,47 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
             ConfirmationEmail(context=context).send(to=[self])
         except SMTPException:
             return False
+        return True
+
+    def generate_new_token(self):
+        self.delete_previous_tokens()
+        return Token.objects.create(user=self)
+
+    def get_total_referral_points(self):
+        return self.loyalty_program.referrals.filter(is_active=True).aggregate(
+            sum=Coalesce(
+                Sum("points"),
+                0,
+                output_field=IntegerField(),
+            ),
+        )["sum"]
+
+    def get_not_claimed_referral_points(self):
+        claimed_points = self.loyalty_program.claimed_points
+        points_to_be_claimed = self.loyalty_program.referrals.filter(
+            is_first_item_purchased=True,
+            is_active=True,
+        ).aggregate(
+            sum=Coalesce(
+                Sum("points"),
+                0,
+                output_field=IntegerField(),
+            ),
+        )[
+            "sum"
+        ]
+        return points_to_be_claimed - claimed_points
+
+    def record_referral(self, referral_code):
+        if not referral_code:
+            return False
+
+        referrer = User.objects.filter(referral_code=referral_code)
+        loyalty_program, created = LoyaltyProgram.objects.get_or_create(
+            referrer=referrer,
+        )
+        Referral.objects.create(
+            loyalty_program=loyalty_program,
+            referent=self,
+        )
         return True

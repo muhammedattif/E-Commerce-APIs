@@ -18,10 +18,15 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+# First Party Imports
+from base.users.urls import users_router_v1
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Users APIs v1
+    path("api/users/v1/", include((users_router_v1.urls, "users"), namespace="users-apis-v1")),
 ]
 
 if settings.DEBUG:
@@ -30,7 +35,6 @@ if settings.DEBUG:
         # TODO: To be added
         # Swagger
         # TODO: To be added
-        # path('silk/', include('silk.urls', namespace='silk')),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

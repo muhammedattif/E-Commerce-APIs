@@ -34,15 +34,17 @@ class UsersCodes:
     PREFIX = "US"
     BASE_NUM = 2
 
-    INACTIVE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0", model_prefix="US")
-    SUSPENDED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1", model_prefix="US")
-    INVALID_UID = build_code(prefix=PREFIX, base_num=BASE_NUM, code="2", model_prefix="US")
-    ALREADY_ACTIVATED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="3", model_prefix="US")
-    CANNOT_SEND_ACTIVATION_EMAIL = build_code(prefix=PREFIX, base_num=BASE_NUM, code="4", model_prefix="US")
-    INVALID_OLD_PASSWORD = build_code(prefix=PREFIX, base_num=BASE_NUM, code="5", model_prefix="US")
-    PASSWORD_NOT_MATCH = build_code(prefix=PREFIX, base_num=BASE_NUM, code="6", model_prefix="US")
-    INVALID_PASSWORD_CRITERIA = build_code(prefix=PREFIX, base_num=BASE_NUM, code="7", model_prefix="US")
-    INVALID_TOKEN = build_code(prefix=PREFIX, base_num=BASE_NUM, code="8", model_prefix="TO")
+    INVALID_CREDENTIALS = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0", model_prefix="US")
+    INACTIVE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1", model_prefix="US")
+    SUSPENDED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="2", model_prefix="US")
+    INVALID_UID = build_code(prefix=PREFIX, base_num=BASE_NUM, code="3", model_prefix="US")
+    ALREADY_ACTIVATED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="4", model_prefix="US")
+    CANNOT_SEND_ACTIVATION_EMAIL = build_code(prefix=PREFIX, base_num=BASE_NUM, code="5", model_prefix="US")
+    INVALID_OLD_PASSWORD = build_code(prefix=PREFIX, base_num=BASE_NUM, code="6", model_prefix="US")
+    PASSWORD_NOT_MATCH = build_code(prefix=PREFIX, base_num=BASE_NUM, code="7", model_prefix="US")
+    INVALID_PASSWORD_CRITERIA = build_code(prefix=PREFIX, base_num=BASE_NUM, code="8", model_prefix="US")
+    INVALID_TOKEN = build_code(prefix=PREFIX, base_num=BASE_NUM, code="9", model_prefix="TO")
+    INVALID_ACCOUNT_TYPE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="10", model_prefix="US")
 
 
 class ModelsCodes:

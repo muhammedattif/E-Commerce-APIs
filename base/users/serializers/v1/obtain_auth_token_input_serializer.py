@@ -22,35 +22,21 @@ class ObtainAuthTokenInputSerializer(ErrorHandledSerializerMixin, serializers.Se
 
         user = User.objects.filter(email=email).first()
         if not user:
-            raise serializers.ValidationError(
-                {
-                    "Invalid User",
-                },
-            )
+            self.code = UsersCodes.INVALID_CREDENTIALS
+            raise serializers.ValidationError("Invalid Credentials")
 
         if not user.is_active:
             self.code = UsersCodes.INACTIVE_USER
-            raise serializers.ValidationError(
-                {
-                    "Inactive user",
-                },
-            )
+            raise serializers.ValidationError("Inactive user")
 
         if user.is_suspended:
             self.code = UsersCodes.SUSPENDED_USER
-            raise serializers.ValidationError(
-                {
-                    "Suspended User",
-                },
-            )
+            raise serializers.ValidationError("Suspended User")
 
         authenticated = authenticate(username=email, password=password)
         if not authenticated:
-            raise serializers.ValidationError(
-                {
-                    "Invalid Credentials",
-                },
-            )
+            self.code = UsersCodes.INVALID_CREDENTIALS
+            raise serializers.ValidationError("Invalid Credentials")
 
-        data["user"] = user
+        self.user = user
         return data

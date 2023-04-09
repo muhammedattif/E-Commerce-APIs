@@ -8,6 +8,7 @@ class AbstractModel(models.Model):
 
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     class Meta:
         abstract = True
