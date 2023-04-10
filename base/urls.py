@@ -21,12 +21,15 @@ from django.contrib import admin
 from django.urls import include, path
 
 # First Party Imports
+from base.brands.urls import brands_router_v1
 from base.users.urls import users_router_v1
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     # Users APIs v1
     path("api/users/v1/", include((users_router_v1.urls, "users"), namespace="users-apis-v1")),
+    # Brands APIs v1
+    path("api/brands/v1/", include((brands_router_v1.urls, "brands"), namespace="brands-apis-v1")),
 ]
 
 if settings.DEBUG:

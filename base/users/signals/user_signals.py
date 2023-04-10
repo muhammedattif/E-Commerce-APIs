@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 # First Party Imports
-from base.users.models import LoyaltyProgram, User
+from base.users.models import Favorite, LoyaltyProgram, User
 from base.utility.random import generate_random_referal_code
 
 
@@ -25,6 +25,9 @@ def user_post_save_signal(instance, created, *args, **kwargs):
 
         # Create Loyalty Program
         LoyaltyProgram.objects.create(referrer=instance)
+
+        # Create Favorite
+        Favorite.objects.create(user=instance)
 
         # Send Activation Email
         if settings.SEND_ACTIVATION_EMAIL and not instance.is_active:

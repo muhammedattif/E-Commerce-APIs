@@ -146,6 +146,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_PAGINATION_CLASS": "base.utility.pagination_classes.CustomPageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 # Django Admin

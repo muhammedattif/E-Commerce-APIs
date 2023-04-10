@@ -27,6 +27,7 @@ class GeneralCodes:
     SUCCESS = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0")
     INVALID_DATA = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1")
     ALREADY_EXISTS = build_code(prefix=PREFIX, base_num=BASE_NUM, code="2")
+    NOT_FOUND = build_code(prefix=PREFIX, base_num=BASE_NUM, code="3")
 
 
 class UsersCodes:
@@ -69,3 +70,31 @@ class SellersCodes:
 
     PREFIX = "SE"
     BASE_NUM = 6
+
+
+def export_response_codes():
+
+    code_classes = [
+        ServerCodes,
+        GeneralCodes,
+        UsersCodes,
+        ModelsCodes,
+        BrandsCodes,
+        PaymentsCodes,
+        PaymentsCodes,
+        SellersCodes,
+    ]
+    exclude_keys = [
+        "PREFIX",
+        "BASE_NUM",
+    ]
+    all_codes = []
+    for _class in code_classes:
+        codes = {
+            v: getattr(_class, v)
+            for v in dir(_class)
+            if not callable(getattr(_class, v)) and v.isupper() and v not in exclude_keys
+        }
+        if codes:
+            all_codes.append({"type": f"{_class.__name__}", "codes": codes})
+    return all_codes

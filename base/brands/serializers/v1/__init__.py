@@ -1,0 +1,1 @@
+from .brand_serializers import BrandSerializer, BrandDetailSerializer

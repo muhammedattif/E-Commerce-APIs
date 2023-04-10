@@ -1,6 +1,13 @@
+# REST Framework Imports
+from rest_framework.routers import SimpleRouter
+
+from .views import v1
+
+brands_router_v1 = SimpleRouter(trailing_slash=False)
+brands_router_v1.register(r"", v1.BrandViewSet, basename="brands")
+
+
 urlpatterns = [
-    # path('all-brands/', AllBrandsView.as_view()),
-    # path('brand/<int:pk>', BrandPageView.as_view(), name='brand'),
     # path('add-bag-item/<int:item>', AddCustomerBagItemView.as_view(), name='add_bag_item'),
     # path('add-fav-brand/<int:brand>', AddCustomerFavoriteBrandView.as_view(), name='add_fav_brand'),
     # path('add-fav-item/<int:item>', AddCustomerFavoriteItemView.as_view(), name='add_fav_item'),
