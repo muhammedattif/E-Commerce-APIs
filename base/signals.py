@@ -1,4 +1,5 @@
 from .brands.signals import *
+from .categories.signals import *
 from .payments.signals import *
 from .products.signals import *
 from .sellers.signals import *
