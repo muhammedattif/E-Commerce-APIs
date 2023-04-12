@@ -14,7 +14,7 @@ from base.utility.random import generate_random_referal_code
 @receiver(pre_save, sender=User)
 def user_pre_save_signal(sender, instance, *args, **kwargs):
     if not instance.id:
-        instance.referal_code = generate_random_referal_code()
+        instance.referral_code = generate_random_referal_code()
 
 
 @receiver(post_save, sender=User)

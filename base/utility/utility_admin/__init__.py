@@ -1,1 +1,1 @@
-from .list_per_page_mixin import AdminListPerPageMixin
+from .abstract_model_admin import AbstractModelAdmin

@@ -11,6 +11,8 @@ from base.utility.serializers import CitySerializer
 
 
 class CityViewSet(viewsets.GenericViewSet):
+    authentication_classes = []
+    permission_classes = []
     queryset = City.objects.filter(is_active=True)
     serializer_class = CitySerializer
     pagination_class = None

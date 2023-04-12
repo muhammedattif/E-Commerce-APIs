@@ -4,11 +4,11 @@ from django.contrib.auth.admin import UserAdmin
 
 # First Party Imports
 from base.users.models import User
-from base.utility.utility_admin import AdminListPerPageMixin
+from base.utility.utility_admin import AbstractModelAdmin
 
 
 @admin.register(User)
-class UserAdmin(AdminListPerPageMixin, UserAdmin):
+class UserAdmin(AbstractModelAdmin, UserAdmin):
     list_filter = [
         "email",
         "first_name",

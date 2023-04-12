@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 # First Party Imports
-from base.utility.media_upload_directories import get_media_upload_directory_path
+from base.utility.functions import get_media_upload_directory_path
 from base.utility.utility_models import AbstractModel
 
 
@@ -23,6 +23,8 @@ class Category(MPTTModel, AbstractModel):
         verbose_name=_("Parent"),
     )
     image = models.ImageField(blank=True, null=True, upload_to=get_media_upload_directory_path, verbose_name=_("Image"))
+    show_in_search_list = models.BooleanField(default=True, verbose_name=_("Show in Search List"))
+    search_list_priority = models.IntegerField(null=True, blank=True, verbose_name=_("Search List Periority"))
 
     class Meta:
         db_table = "categories_category"

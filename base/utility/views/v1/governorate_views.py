@@ -11,6 +11,8 @@ from base.utility.serializers import GovernorateSerializer
 
 
 class GovernorateViewSet(viewsets.GenericViewSet):
+    authentication_classes = []
+    permission_classes = []
     queryset = Governorate.objects.filter(is_active=True)
     serializer_class = GovernorateSerializer
     pagination_class = None

@@ -3,11 +3,11 @@ from django.contrib import admin
 
 # First Party Imports
 from base.users.models import OTP
-from base.utility.utility_admin import AdminListPerPageMixin
+from base.utility.utility_admin import AbstractModelAdmin
 
 
 @admin.register(OTP)
-class OTPAdmin(AdminListPerPageMixin, admin.ModelAdmin):
+class OTPAdmin(AbstractModelAdmin):
     list_display = ("id", "user", "email", "expires_at", "otp_type", "pin", "is_active", "created_at")
     list_filter = (
         "created_at",

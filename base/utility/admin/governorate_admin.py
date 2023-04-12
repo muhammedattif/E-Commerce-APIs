@@ -3,11 +3,11 @@ from django.contrib import admin
 
 # First Party Imports
 from base.utility.models import Governorate
-from base.utility.utility_admin import AdminListPerPageMixin
+from base.utility.utility_admin import AbstractModelAdmin
 
 
 @admin.register(Governorate)
-class GovernorateAdmin(AdminListPerPageMixin, admin.ModelAdmin):
+class GovernorateAdmin(AbstractModelAdmin):
     list_display = ["id", "en_name", "ar_name", "created_at", "is_active"]
     list_filter = ["is_active"]
     search_fields = ["id", "en_name", "ar_name"]
