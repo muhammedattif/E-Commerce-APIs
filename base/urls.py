@@ -24,6 +24,7 @@ from django.urls import include, path
 from base.brands.urls import brands_router_v1
 from base.categories.urls import categories_router_v1
 from base.users.urls import users_router_v1
+from base.utility.urls import utilities_router_v1
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -33,6 +34,8 @@ urlpatterns = [
     path("api/brands/v1/", include((brands_router_v1.urls, "brands"), namespace="brands-apis-v1")),
     # Categories APIs v1
     path("api/categories/v1/", include((categories_router_v1.urls, "categories"), namespace="categories-apis-v1")),
+    # Utility APIs v1
+    path("api/utilities/v1/", include((utilities_router_v1.urls, "utilities"), namespace="utilities-apis-v1")),
 ]
 
 if settings.DEBUG:

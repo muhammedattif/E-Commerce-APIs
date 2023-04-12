@@ -4,3 +4,4 @@ from .change_password_input_serializer import ChangePasswordInputSerializer
 from .activation_serializer import ActivationSerializer
 from .resend_activation_email_input_serializer import ResendActivationInputSerializer
 from .user_serializers import UserSerializer
+from .address_serializers import AddressSerialiser, AddressCreateSerialiser, AddressUpdateSerialiser

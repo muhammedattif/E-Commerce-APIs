@@ -8,6 +8,8 @@ from base.utility.utility_serializers import ErrorHandledSerializerMixin
 
 class UserSerializer(ErrorHandledSerializerMixin, serializers.ModelSerializer):
     email = serializers.EmailField(read_only=True)
+    is_buyer = serializers.BooleanField(read_only=True)
+    is_seller = serializers.BooleanField(read_only=True)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
     birth_date = serializers.DateField(required=False)

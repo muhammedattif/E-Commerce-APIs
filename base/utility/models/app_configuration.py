@@ -3,8 +3,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+# First Party Imports
+from base.utility import AbstractModel
 
-class AppConfiguration(models.Model):
+
+class AppConfiguration(AbstractModel):
     """AppConfiguration model"""
 
     referral_points = models.PositiveIntegerField(
