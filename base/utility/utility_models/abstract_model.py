@@ -12,7 +12,7 @@ from base.utility.functions.simple_history import adjusted_get_user
 class AbstractModel(models.Model):
     """abstract model that is an entry point for common changes across all models"""
 
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active?"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 

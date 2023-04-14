@@ -61,6 +61,10 @@ class Product(AbstractModel):
         related_name="products",
         verbose_name=_("Seller"),
     )
+    is_sale = models.BooleanField(
+        default=False,
+        verbose_name=_("Is Sale?"),
+    )
     is_our_pick = models.BooleanField(
         default=False,
         verbose_name=_("Is our Pick?"),

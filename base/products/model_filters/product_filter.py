@@ -15,6 +15,7 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
 class ProductFilter(filters.FilterSet):
     is_popular = filters.BooleanFilter(method="get_popular_products")
     is_our_pick = filters.BooleanFilter(field_name="is_our_pick")
+    is_sale = filters.BooleanFilter(field_name="is_sale")
     category__in = CharInFilter(field_name="category__id", lookup_expr="in")
     brand__in = CharInFilter(field_name="seller__brands__id", lookup_expr="in")
     price = filters.RangeFilter(field_name="models__price")

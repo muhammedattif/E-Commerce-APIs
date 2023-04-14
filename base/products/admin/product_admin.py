@@ -15,15 +15,28 @@ class ModelInline(AbstractStackedInline):
 
 @admin.register(Product)
 class ProductAdmin(AbstractModelAdmin):
-    list_display = ["id", "seller", "name", "category", "type", "is_approved", "is_active", "created_at", "updated_at"]
+    list_display = [
+        "id",
+        "seller",
+        "name",
+        "category",
+        "type",
+        "is_sale",
+        "is_our_pick",
+        "is_approved",
+        "is_active",
+        "created_at",
+        "updated_at",
+    ]
     list_filter = [
         "seller",
         "name",
         "category",
         "type",
-        "is_active",
+        "is_sale",
         "is_approved",
         "is_our_pick",
+        "is_active",
         "created_at",
         "updated_at",
     ]
@@ -37,6 +50,7 @@ class ProductAdmin(AbstractModelAdmin):
         "type",
         "size_guide",
         "seller",
+        "is_sale",
         "is_our_pick",
         "is_approved",
         "is_active",
