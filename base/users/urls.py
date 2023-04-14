@@ -5,6 +5,7 @@ from .views import v1
 
 users_router_v1 = SimpleRouter(trailing_slash=False)
 # users_router_v1.register(r"signup", v1.SignUpViewSet, basename="signup")
+users_router_v1.register(r"", v1.UserViewSet, basename="users")
 users_router_v1.register(r"auth", v1.AuthViewSet, basename="auth")
 # users_router_v1.register(r"password-reset", v1.ResetPasswordViewSet, basename="reset-password")
 users_router_v1.register(r"profile", v1.ProfileViewSet, basename="profile")

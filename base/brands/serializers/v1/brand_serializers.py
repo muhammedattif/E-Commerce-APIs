@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 # First Party Imports
 from base.brands.models import Brand
-from base.sellers.serializers import SellerBasicinfoSerializer
+from base.sellers.serializers import SellerBasicInfoSerializer
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class BrandDetailSerializer(serializers.ModelSerializer):
-    seller = SellerBasicinfoSerializer(many=False, read_only=True)
+    seller = SellerBasicInfoSerializer(many=False, read_only=True)
 
     class Meta:
         model = Brand

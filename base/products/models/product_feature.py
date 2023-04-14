@@ -9,23 +9,26 @@ from base.utility.utility_models import AbstractModel
 from .sys_feature import SysFeature
 
 
-class ModelFeature(AbstractModel):
+class ProductFeature(AbstractModel):
 
-    model = models.ForeignKey(
-        "base.Model",
-        verbose_name=_("Model"),
+    product = models.ForeignKey(
+        "base.Product",
+        verbose_name=_("Product"),
         on_delete=models.CASCADE,
         related_name="features",
     )
     name = models.CharField(max_length=100, verbose_name=_("Name"))
 
     class Meta:
-        db_table = "products_model_features"
-        verbose_name = _("Model Features")
-        verbose_name_plural = _("Model Features")
+        db_table = "products_product_features"
+        verbose_name = _("Product Features")
+        verbose_name_plural = _("Product Features")
 
     def __str__(self):
-        return self.name
+        return "{0}| {1}".format(
+            self.id,
+            self.name,
+        )
 
     def clean_fields(self, **kwargs) -> None:
         super().clean_fields(**kwargs)

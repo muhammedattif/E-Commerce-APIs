@@ -1,0 +1,1 @@
+from .inventory_request_signals import inventory_request_post_save_signal

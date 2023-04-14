@@ -1,1 +1,1 @@
-from .seller_serializers import SellerBasicinfoSerializer
+from .seller_serializers import SellerBasicInfoSerializer

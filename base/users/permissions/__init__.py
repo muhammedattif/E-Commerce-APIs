@@ -1,2 +1,3 @@
 from .buyer_permission import BuyerPermission
 from .seller_permission import SellerPermission
+from .staff_user_permission_mixin import StafUserPermissiondMixin

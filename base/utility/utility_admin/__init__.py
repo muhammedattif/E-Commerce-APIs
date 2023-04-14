@@ -1,1 +1,1 @@
-from .abstract_model_admin import AbstractModelAdmin
+from .abstract_model_admin import AbstractModelAdmin, AbstractStackedInline

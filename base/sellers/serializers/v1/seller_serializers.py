@@ -5,7 +5,7 @@ from rest_framework import serializers
 from base.users.models import User
 
 
-class SellerBasicinfoSerializer(serializers.ModelSerializer):
+class SellerBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [

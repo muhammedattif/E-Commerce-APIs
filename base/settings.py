@@ -34,6 +34,10 @@ SECRET_KEY = config("SECRET_KEY")
 # Application definition
 
 INSTALLED_APPS = [
+    # Third Parties
+    "dal",
+    "dal_select2",
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
     # Third Parties
     "mptt",
     "rest_framework",
+    "django_filters",
     "rest_framework.authtoken",
     "simple_history",
     # APPS
@@ -152,6 +157,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "base.utility.pagination_classes.CustomPageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 # Django Admin

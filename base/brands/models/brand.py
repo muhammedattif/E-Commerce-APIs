@@ -13,7 +13,12 @@ class Brand(AbstractModel):
     Brand Model
     """
 
-    seller = models.ForeignKey("base.User", on_delete=models.CASCADE, verbose_name=_("Seller"))
+    seller = models.ForeignKey(
+        "base.User",
+        related_name="brands",
+        on_delete=models.CASCADE,
+        verbose_name=_("Seller"),
+    )
     name = models.CharField(max_length=50, unique=True)
     image = models.ImageField(upload_to=get_media_upload_directory_path)
     show_in_search_list = models.BooleanField(default=True, verbose_name=_("Show in Search List"))

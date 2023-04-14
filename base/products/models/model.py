@@ -4,64 +4,25 @@ from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
 from base.utility import AbstractModel
-from base.utility.functions import get_media_upload_directory_path
 
 
 class Model(AbstractModel):
-    class ModelTypes(models.IntegerChoices):
-        MALE = 0, _("Male")
-        FEMALE = 1, _("Female")
-        UNISEX = 3, _("Unisex")
 
-    name = models.CharField(
-        max_length=200,
-        verbose_name=_("Name"),
+    product = models.ForeignKey(
+        "base.Product",
+        on_delete=models.CASCADE,
+        related_name="models",
+        verbose_name=_("Product"),
     )
-    description = models.TextField(
-        verbose_name=_("Description"),
+    product_options = models.ManyToManyField(
+        "base.ProductOption",
+        verbose_name=_("Product Options"),
     )
-    about = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_("About"),
+    inventory_quantity = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Inventory Quantity"),
     )
-    category = models.ForeignKey(
-        "base.Category",
-        on_delete=models.PROTECT,
-        verbose_name=_("Category"),
-    )
-    collection_name = models.CharField(
-        null=True,
-        blank=True,
-        max_length=50,
-        verbose_name=("Collection Name"),
-    )
-    material = models.CharField(
-        null=True,
-        blank=True,
-        max_length=50,
-        verbose_name=("Material"),
-    )
-    type = models.IntegerField(
-        choices=ModelTypes.choices,
-        verbose_name=_("Type"),
-    )
-    size_guide = models.FileField(
-        null=True,
-        blank=True,
-        upload_to=get_media_upload_directory_path,
-        verbose_name=_("Size Guide"),
-        help_text=_("PDF or Images"),
-    )
-    seller = models.ForeignKey(
-        "base.User",
-        on_delete=models.PROTECT,
-        verbose_name=_("Seller"),
-    )
-    is_approved = models.BooleanField(
-        default=False,
-        verbose_name=_("Is Approved"),
-    )
+    price = models.FloatField(verbose_name="Price")
 
     class Meta:
         db_table = "products_models"
@@ -69,4 +30,20 @@ class Model(AbstractModel):
         verbose_name_plural = _("Models")
 
     def __str__(self) -> str:
-        return self.name
+        text = self.as_text
+        if text:
+            return "{0}| {1}".format(self.product.name, text)
+        return self.product.name
+
+    @property
+    def as_text(self):
+        text = ""
+        product_options = self.product_options.all()
+        if not product_options:
+            return text
+        for option in product_options:
+            text += "{0}: {1} ".format(
+                option.product_feature.name,
+                option.name,
+            )
+        return text

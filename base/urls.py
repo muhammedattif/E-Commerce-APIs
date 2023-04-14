@@ -32,7 +32,8 @@ urlpatterns = [
     # Users APIs v1
     path("api/users/v1/", include((users_router_v1.urls, "users"), namespace="users-apis-v1")),
     # Products APIs v1
-    path("api/models/v1/", include((products_router_v1.urls, "products"), namespace="products-apis-v1")),
+    path("api/products/v1/", include((products_router_v1.urls, "products"), namespace="products-apis-v1")),
+    path("products/autocomplete/", include("base.products.autocomplete_urls")),
     # Brands APIs v1
     path("api/brands/v1/", include((brands_router_v1.urls, "brands"), namespace="brands-apis-v1")),
     # Categories APIs v1
@@ -47,7 +48,9 @@ if settings.DEBUG:
         # TODO: To be added
         # Swagger
         # TODO: To be added
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    ]
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 admin.index_title = settings.SITE_INDEX_TITLE

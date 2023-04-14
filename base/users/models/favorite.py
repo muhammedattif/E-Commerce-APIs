@@ -18,6 +18,7 @@ class Favorite(AbstractModel):
         verbose_name=_("User"),
     )
     brands = models.ManyToManyField("base.Brand", blank=True, verbose_name=_("Brands"))
+    products = models.ManyToManyField("base.Product", blank=True, verbose_name=_("Products"))
 
     class Meta:
         db_table = "users_favorites"

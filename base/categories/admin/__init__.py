@@ -1,1 +1,2 @@
 from .category_admin import CategoryAdmin
+from .category_tracker_admin import CategoryTrackerAdmin

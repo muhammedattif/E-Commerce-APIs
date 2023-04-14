@@ -48,10 +48,15 @@ class UsersCodes:
     INVALID_ACCOUNT_TYPE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="10", model_prefix="US")
 
 
-class ModelsCodes:
+class ProductsCodes:
 
-    PREFIX = "MO"
+    PREFIX = "PR"
     BASE_NUM = 3
+
+    OUT_OF_STOCK = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0", model_prefix="PR")
+    AVAILABLE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1", model_prefix="PR")
+    QUANTITY_UNAVAILBLE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="2", model_prefix="PR")
+    NOT_AVAILBLE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="3", model_prefix="PR")
 
 
 class BrandsCodes:
@@ -78,7 +83,7 @@ def export_response_codes():
         ServerCodes,
         GeneralCodes,
         UsersCodes,
-        ModelsCodes,
+        ProductsCodes,
         BrandsCodes,
         PaymentsCodes,
         PaymentsCodes,
