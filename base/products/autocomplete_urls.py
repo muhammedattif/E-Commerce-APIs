@@ -9,4 +9,9 @@ urlpatterns = [
         auto_complete.ProductOptionsAutocompleteView.as_view(),
         name="product-options-autocomplete",
     ),
+    path(
+        "product-models-autocomplete",
+        auto_complete.ProductModelsAutocompleteView.as_view(),
+        name="product-models-autocomplete",
+    ),
 ]

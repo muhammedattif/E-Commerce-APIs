@@ -47,3 +47,10 @@ class Model(AbstractModel):
                 option.name,
             )
         return text
+
+    @property
+    def is_out_of_stock(self):
+        return self.inventory_quantity == 0
+
+    def is_available_in_inventory(self, quantity):
+        return self.inventory_quantity >= quantity

@@ -12,3 +12,4 @@ class CategoryAdmin(AbstractModelAdmin):
     list_filter = ["parent__name", "name"]
     readonly_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
+    search_fields = ["name"]

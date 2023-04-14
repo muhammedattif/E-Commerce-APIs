@@ -65,7 +65,7 @@ class BrandsCodes:
     BASE_NUM = 4
 
 
-class PaymentsCodes:
+class PaymentCodes:
 
     PREFIX = "PA"
     BASE_NUM = 5
@@ -85,8 +85,7 @@ def export_response_codes():
         UsersCodes,
         ProductsCodes,
         BrandsCodes,
-        PaymentsCodes,
-        PaymentsCodes,
+        PaymentCodes,
         SellersCodes,
     ]
     exclude_keys = [

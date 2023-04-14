@@ -179,3 +179,6 @@ MIGRATION_MODULES = {
 }
 
 SEND_ACTIVATION_EMAIL = False
+
+# Payment Configs
+TAX_AMOUNT = 14  # In Percent

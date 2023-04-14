@@ -37,7 +37,6 @@ class ProductViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ["name", "description", "about"]
-    filterset_fields = ["name"]
     ordering_fields = ["models__price", "created_at"]
 
     def get_serializer_context(self):

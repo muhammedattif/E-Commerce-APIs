@@ -1,4 +1,0 @@
-# Django Imports
-
-
-urlpatterns = []

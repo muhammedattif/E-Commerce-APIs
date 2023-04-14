@@ -1,1 +1,2 @@
 from .product_options_view import ProductOptionsAutocompleteView
+from .product_models_view import ProductModelsAutocompleteView

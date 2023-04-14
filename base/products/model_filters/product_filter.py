@@ -13,20 +13,13 @@ class CharInFilter(filters.BaseInFilter, filters.CharFilter):
 
 
 class ProductFilter(filters.FilterSet):
-    is_popular = filters.BooleanFilter(field_name="is_popular", method="get_popular_products")
+    is_popular = filters.BooleanFilter(method="get_popular_products")
+    is_our_pick = filters.BooleanFilter(field_name="is_our_pick")
     category__in = CharInFilter(field_name="category__id", lookup_expr="in")
     brand__in = CharInFilter(field_name="seller__brands__id", lookup_expr="in")
     price = filters.RangeFilter(field_name="models__price")
-    price_low_to_high = filters.BooleanFilter(field_name="price_low_to_high", method="get_popular_products")
-    price_high_to_low = filters.BooleanFilter(field_name="price_high_to_low", method="get_popular_products")
-    # ordering = filters.OrderingFilter(
-    #     # tuple-mapping retains order
-    #     fields=(
-    #         ('models__price', 'price'),
-    #         ('created_at', 'created_at'),
-    #     ),
-    #     distinct=True
-    # )
+    price_low_to_high = filters.BooleanFilter(method="get_popular_products")
+    price_high_to_low = filters.BooleanFilter(method="get_popular_products")
     color__in = CharInFilter(field_name="colors", method="get_colors")
     size__in = CharInFilter(field_name="sizes", method="get_sizes")
 

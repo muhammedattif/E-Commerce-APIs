@@ -61,6 +61,10 @@ class Product(AbstractModel):
         related_name="products",
         verbose_name=_("Seller"),
     )
+    is_our_pick = models.BooleanField(
+        default=False,
+        verbose_name=_("Is our Pick?"),
+    )
     is_approved = models.BooleanField(
         default=False,
         verbose_name=_("Is Approved?"),
@@ -78,13 +82,13 @@ class Product(AbstractModel):
 
     @property
     def image(self):
+        # TODO: To be removed and add cover image field
         last_model = self.models.filter(images__isnull=False).last()
         if not last_model:
             return None
         last_image = last_model.images.last()
         if not last_image:
             return None
-        print(last_image.image)
         return last_image.image
 
     def check_inventory(self, options=[], quantity=1):
@@ -109,10 +113,10 @@ class Product(AbstractModel):
         if not model:
             return model, InventoryStatuses.NOT_AVAILBLE
 
-        if model.inventory_quantity == 0:
+        if model.is_out_of_stock:
             return model, InventoryStatuses.OUT_OF_STOCK
 
-        if model.inventory_quantity < quantity:
+        if not model.is_available_in_inventory(quantity=quantity):
             return model, InventoryStatuses.QUANTITY_UNAVAILBLE
 
         return model, InventoryStatuses.AVAILABLE
