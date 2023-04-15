@@ -34,18 +34,21 @@ class InventoryRequest(AbstractModel):
         validators=[MinValueValidator(1)],
         verbose_name=_("Quantity"),
     )
-    is_approved = models.BooleanField(default=False, verbose_name=_("Is Approved?"))
-    approved_by = models.ForeignKey(
+    status = models.IntegerField(
+        choices=InventoryRequestStatusChoices.choices,
+        verbose_name=_("Status"),
+    )
+    action_taken_by = models.ForeignKey(
         "base.User",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("Approved By"),
+        verbose_name=_("Action Taken By"),
     )
-    approved_at = models.DateTimeField(
+    action_taken_at = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_("Approved At"),
+        verbose_name=_("Action Taken At"),
     )
 
     class Meta:
@@ -64,15 +67,21 @@ class InventoryRequest(AbstractModel):
         if self.seller != self.model.product.seller:
             raise ValidationError(_("Model {0} is not related to seller {1}").format(self.model, self.seller))
 
-    def approve(self, user):
+    def approve(self, action_user):
         """
         Approve Inventory Request:
         1- Update Model Inventory Quantity
         2- Update Approved At and Approved By
         3- Mark Request as Approved
         """
-        if self.is_approved:
+        if self.status == InventoryRequestStatusChoices.APPROVED:
             return False, InventoryRequestStatusChoices.ALREADY_APPROVED
+
+        if self.status == InventoryRequestStatusChoices.DECLINED:
+            return False, InventoryRequestStatusChoices.ALREADY_DECLINED
+
+        if self.status != InventoryRequestStatusChoices.SUBMITTED:
+            return False, InventoryRequestStatusChoices.CANNOT_DECLINE
 
         if self.type == InventoryRequestTypesChoices.ADD:
             self.model.inventory_quantity += models.F("inventory_quantity") + self.quantity
@@ -80,14 +89,32 @@ class InventoryRequest(AbstractModel):
             if not self.model.is_available_in_inventory(quantity=self.quantity):
                 return False, InventoryRequestStatusChoices.QUANTITY_UNAVAILBLE
             self.model.inventory_quantity += models.F("inventory_quantity") - self.quantity
-        else:
-            return False, InventoryRequestStatusChoices.CANNOT_APPROVE
 
         self.model.save()
 
-        self.approved_at = datetime.now()
-        self.approved_by = user
-        self.is_approved = True
+        self.action_taken_at = datetime.now()
+        self.action_taken_by = action_user
+        self.status = InventoryRequestStatusChoices.APPROVED
         self.save()
 
         return True, InventoryRequestStatusChoices.APPROVED
+
+    def decline(self, action_user):
+        """
+        Decline Inventory Request:
+        """
+        if self.status == InventoryRequestStatusChoices.APPROVED:
+            return False, InventoryRequestStatusChoices.ALREADY_APPROVED
+
+        if self.status == InventoryRequestStatusChoices.DECLINED:
+            return False, InventoryRequestStatusChoices.ALREADY_DECLINED
+
+        if self.status != InventoryRequestStatusChoices.SUBMITTED:
+            return False, InventoryRequestStatusChoices.CANNOT_DECLINE
+
+        self.action_taken_at = datetime.now()
+        self.action_taken_by = action_user
+        self.status = InventoryRequestStatusChoices.DECLINED
+        self.save()
+
+        return True, InventoryRequestStatusChoices.DECLINED

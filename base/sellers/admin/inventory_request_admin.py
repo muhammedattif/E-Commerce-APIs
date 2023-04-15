@@ -15,8 +15,9 @@ class InventoryRequestAdmin(AbstractModelAdmin):
         "seller",
         "model",
         "quantity",
-        "is_approved",
-        "approved_by",
+        "status",
+        "action_taken_at",
+        "action_taken_by",
         "is_active",
         "created_at",
         "updated_at",
@@ -26,22 +27,45 @@ class InventoryRequestAdmin(AbstractModelAdmin):
         "seller",
         "model",
         "quantity",
-        "is_approved",
-        "approved_by",
-        "approved_at",
+        "status",
+        "action_taken_at",
+        "action_taken_by",
         "is_active",
         "created_at",
         "updated_at",
     ]
-    readonly_fields = ["is_approved", "approved_at", "approved_by", "created_at", "updated_at"]
+    readonly_fields = [
+        "status",
+        "action_taken_at",
+        "action_taken_by",
+        "created_at",
+        "updated_at",
+    ]
     ordering = ["-created_at"]
-    list_select_related = ["seller", "model", "approved_by"]
-    actions = ["approve"]
+    list_select_related = ["seller", "model", "action_taken_by"]
+    actions = ["approve", "decline"]
 
     def approve(self, request, queryset):
         for inventory_request in queryset:
-            is_approved, status = inventory_request.approve(user=request.user)
+            is_approved, status = inventory_request.approve(action_user=request.user)
             if is_approved:
+                message = "Request: {0} {1}".format(
+                    inventory_request.__str__(),
+                    InventoryRequestStatusChoices(status).label,
+                )
+                self.message_user(request, message, level=messages.SUCCESS)
+            else:
+                message = "Request: {0} {1}".format(
+                    inventory_request.__str__(),
+                    InventoryRequestStatusChoices(status).label,
+                )
+                self.message_user(request, message, level=messages.ERROR)
+        return
+
+    def decline(self, request, queryset):
+        for inventory_request in queryset:
+            is_declined, status = inventory_request.decline(action_user=request.user)
+            if is_declined:
                 message = "Request: {0} {1}".format(
                     inventory_request.__str__(),
                     InventoryRequestStatusChoices(status).label,

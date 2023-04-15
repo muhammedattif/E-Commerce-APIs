@@ -12,6 +12,10 @@ from base.products.models import Model
 def pre_create_historical_record_callback(sender, **kwargs):
     instance = kwargs["instance"]
     history_instance = kwargs["history_instance"]
-    if isinstance(instance, Model):
-        instance.refresh_from_db()
-        history_instance.inventory_quantity = instance.inventory_quantity
+    try:
+
+        if isinstance(instance, Model):
+            instance.refresh_from_db()
+            history_instance.inventory_quantity = instance.inventory_quantity
+    except:
+        pass

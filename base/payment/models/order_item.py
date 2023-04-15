@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
-from base.payment.utils.choices import OrderItemStatusChoices
+from base.payment.utils.choices import OrderItemStatusChoices, OrderStatusChoices
 
 
 class OrderItem(models.Model):
@@ -102,6 +102,16 @@ class OrderItem(models.Model):
 
         if self.quantity_rolledback_to_inventory:
             return False
+
+        if self.order.status != OrderStatusChoices.PAID:
+            return False
+
+        if self.status != OrderItemStatusChoices.PAID:
+            return False
+
+        if quantity > self.quantity:
+            return False
+
         self.model.inventory_quantity = models.F("inventory_quantity") + quantity
         self.model.save()
 

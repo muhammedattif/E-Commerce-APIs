@@ -5,11 +5,11 @@ from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
 from base.products.managers import ProductManager
-from base.utility import AbstractModel
+from base.utility import AbstractModel, AbstractModelWithApproval, AbstractModelWithHistory
 from base.utility.functions import get_media_upload_directory_path
 
 
-class Product(AbstractModel):
+class AbstractProduct(AbstractModel):
     class ModelTypes(models.IntegerChoices):
         MALE = 0, _("Male")
         FEMALE = 1, _("Female")
@@ -58,7 +58,7 @@ class Product(AbstractModel):
     seller = models.ForeignKey(
         "base.User",
         on_delete=models.PROTECT,
-        related_name="products",
+        related_name="%(class)ss",
         verbose_name=_("Seller"),
     )
     is_sale = models.BooleanField(
@@ -74,6 +74,12 @@ class Product(AbstractModel):
         verbose_name=_("Is Approved?"),
     )
 
+    class Meta:
+        abstract = True
+
+
+class Product(AbstractProduct, AbstractModelWithHistory):
+
     objects = ProductManager()
 
     class Meta:
@@ -82,7 +88,7 @@ class Product(AbstractModel):
         verbose_name_plural = _("Products")
 
     def __str__(self) -> str:
-        return self.name
+        return "{0}| {1}".format(self.id, self.name)
 
     @property
     def image(self):
@@ -124,3 +130,28 @@ class Product(AbstractModel):
             return model, InventoryStatusChoices.QUANTITY_UNAVAILBLE
 
         return model, InventoryStatusChoices.AVAILABLE
+
+
+class ProductApproval(AbstractProduct, AbstractModelWithApproval):
+    PRIMARY_CLASS = Product
+    APPROVAL_FIELDS = [
+        "name",
+        "description",
+        "about",
+        "category",
+        "collection_name",
+        "material",
+        "type",
+        "size_guide",
+    ]
+    NON_EDITABLE_FIELDS = [
+        "id",
+        "seller_id",
+        "created_at",
+        "updated_at",
+    ]
+
+    class Meta:
+        db_table = "products_products_approvals"
+        verbose_name = _("Product Approval")
+        verbose_name_plural = _("Product Approvals")

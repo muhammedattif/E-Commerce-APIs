@@ -182,3 +182,7 @@ SEND_ACTIVATION_EMAIL = False
 
 # Payment Configs
 TAX_AMOUNT = 14  # In Percent
+
+
+FRONT_END_DOMAIN = config("FRONT_END_DOMAIN", default="")
+BACK_END_DOMAIN = config("BACK_END_DOMAIN", default="")

@@ -1,1 +1,1 @@
-from .model_form import ModelForm
+from .model_form import ModelForm, ModelFormWithApproval

@@ -6,6 +6,7 @@ from dal import autocomplete
 
 # First Party Imports
 from base.products.models import Model
+from base.utility.utility_admin.forms import AbstractApprovalForm
 
 
 class ModelForm(forms.ModelForm):
@@ -18,3 +19,7 @@ class ModelForm(forms.ModelForm):
                 forward=["product"],
             ),
         }
+
+
+class ModelFormWithApproval(ModelForm, AbstractApprovalForm):
+    pass

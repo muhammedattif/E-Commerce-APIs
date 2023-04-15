@@ -1,5 +1,5 @@
-from .product import Product
-from .model import Model
+from .product import Product, ProductApproval
+from .model import Model, ModelApproval
 from .product_feature import ProductFeature
 from .product_option import ProductOption
 from .product_tracker import ProductTracker
