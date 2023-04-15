@@ -3,6 +3,7 @@ from django.contrib import admin, messages
 
 # First Party Imports
 from base.sellers.models import InventoryRequest
+from base.sellers.utils.choices import InventoryRequestStatusChoices
 from base.utility.utility_admin import AbstractModelAdmin
 
 
@@ -10,6 +11,7 @@ from base.utility.utility_admin import AbstractModelAdmin
 class InventoryRequestAdmin(AbstractModelAdmin):
     list_display = [
         "id",
+        "type",
         "seller",
         "model",
         "quantity",
@@ -20,6 +22,7 @@ class InventoryRequestAdmin(AbstractModelAdmin):
         "updated_at",
     ]
     list_filter = [
+        "type",
         "seller",
         "model",
         "quantity",
@@ -37,11 +40,17 @@ class InventoryRequestAdmin(AbstractModelAdmin):
 
     def approve(self, request, queryset):
         for inventory_request in queryset:
-            is_approved = inventory_request.approve(user=request.user)
+            is_approved, status = inventory_request.approve(user=request.user)
             if is_approved:
-                message = "Request: {0} Approved Successfully".format(inventory_request.__str__())
+                message = "Request: {0} {1}".format(
+                    inventory_request.__str__(),
+                    InventoryRequestStatusChoices(status).label,
+                )
                 self.message_user(request, message, level=messages.SUCCESS)
             else:
-                message = "Request: {0} is Already Approved".format(inventory_request.__str__())
+                message = "Request: {0} {1}".format(
+                    inventory_request.__str__(),
+                    InventoryRequestStatusChoices(status).label,
+                )
                 self.message_user(request, message, level=messages.ERROR)
         return

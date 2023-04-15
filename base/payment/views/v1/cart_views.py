@@ -1,14 +1,24 @@
+# Django Imports
+from django.db import transaction
+
 # REST Framework Imports
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # First Party Imports
-from base.payment.models import Cart, CartItem
-from base.payment.serializers.v1 import AddToCartInputerializer, CartSerializer, UpdateCartItemInputerializer
+from base.payment.models import Cart, CartItem, Order, OrderItem
+from base.payment.serializers.v1 import (
+    AddToCartInputerializer,
+    CartSerializer,
+    CheckoutInputSerializer,
+    OrderSerializer,
+    UpdateCartItemInputerializer,
+)
 from base.users.authentication import CustomTokenAuthentication
 from base.users.permissions import BuyerPermission
-from base.utility.response_codes import GeneralCodes, ProductsCodes
+from base.utility.classes import Requests
+from base.utility.response_codes import GeneralCodes, PaymentCodes, ProductsCodes
 
 
 class CartViewSet(viewsets.GenericViewSet):
@@ -174,6 +184,79 @@ class CartViewSet(viewsets.GenericViewSet):
         return Response(
             {
                 "code": GeneralCodes.SUCCESS,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @transaction.atomic
+    @action(
+        methods=["POST"],
+        detail=False,
+    )
+    def checkout(self, *args, **kwargs):
+
+        input_serializer = CheckoutInputSerializer(
+            data=self.request.data,
+            context={"request": self.request},
+        )
+        if not input_serializer.is_valid():
+            return Response(
+                {
+                    "code": input_serializer.code,
+                    "errors": input_serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        address = input_serializer.address
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+
+        # Get cart items
+        cart_items = cart.items.select_related("model", "product")
+        if not cart_items:
+            return Response({"code": PaymentCodes.EMPTY_CART}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if all items quantity available
+        # Cart items may be added for a long time
+        for item in cart_items:
+
+            if item.model.is_out_of_stock:
+                response = {
+                    "code": ProductsCodes.OUT_OF_STOCK,
+                    "product_name": item.product.name,
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            elif not item.is_available_in_inventory:
+                response = {
+                    "code": ProductsCodes.QUANTITY_UNAVAILBLE,
+                    "product_name": item.product.name,
+                    "available_quantity": item.model.inventory_quantity,
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(
+            user=self.request.user,
+            total=cart.total,
+            sub_total=cart.sub_total,
+            discount=cart.discount,
+            taxes=cart.taxes,
+            address=address,
+        )
+        for item in cart_items:
+            OrderItem.objects.create(
+                product=item.product,
+                order=order,
+                model=item.model,
+                price=item.model.price,
+                quantity=item.quantity,
+            )
+
+        serializer = OrderSerializer(order, many=False, context={"lang": Requests.get_language(self.request)})
+        return Response(
+            {
+                "code": GeneralCodes.SUCCESS,
+                "data": serializer.data,
             },
             status=status.HTTP_200_OK,
         )

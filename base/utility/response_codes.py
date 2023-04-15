@@ -70,6 +70,9 @@ class PaymentCodes:
     PREFIX = "PA"
     BASE_NUM = 5
 
+    CANNOT_CANCEL_ORDER = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0", model_prefix="OR")
+    EMPTY_CART = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1", model_prefix="CA")
+
 
 class SellersCodes:
 

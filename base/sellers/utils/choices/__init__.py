@@ -1,0 +1,2 @@
+from .inventory_request_types_choices import InventoryRequestTypesChoices
+from .inventory_request_status_choices import InventoryRequestStatusChoices

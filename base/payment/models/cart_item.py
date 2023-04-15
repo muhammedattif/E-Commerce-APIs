@@ -62,3 +62,7 @@ class CartItem(AbstractModelWithHistory):
     @property
     def total_price(self):
         return self.model.price * self.quantity
+
+    @property
+    def is_available_in_inventory(self):
+        return self.model.is_available_in_inventory(quantity=self.quantity)

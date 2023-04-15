@@ -98,7 +98,7 @@ class Product(AbstractModel):
     def check_inventory(self, options=[], quantity=1):
         "Check for Product Availability in Inventory"
         # First Party Imports
-        from base.products.utils.choices import InventoryStatuses
+        from base.products.utils.choices import InventoryStatusChoices
 
         options_len = len(options)
         model_queryset = self.models
@@ -115,12 +115,12 @@ class Product(AbstractModel):
 
         model = model_queryset.first()
         if not model:
-            return model, InventoryStatuses.NOT_AVAILBLE
+            return model, InventoryStatusChoices.NOT_AVAILBLE
 
         if model.is_out_of_stock:
-            return model, InventoryStatuses.OUT_OF_STOCK
+            return model, InventoryStatusChoices.OUT_OF_STOCK
 
         if not model.is_available_in_inventory(quantity=quantity):
-            return model, InventoryStatuses.QUANTITY_UNAVAILBLE
+            return model, InventoryStatusChoices.QUANTITY_UNAVAILBLE
 
-        return model, InventoryStatuses.AVAILABLE
+        return model, InventoryStatusChoices.AVAILABLE

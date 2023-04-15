@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from base.products.model_filters import ProductFilter
 from base.products.models import Product, ProductTracker
 from base.products.serializers.v1 import ProductAvailabilityInputSerializer, ProductDetailSerializer, ProductSerializer
-from base.products.utils.choices import InventoryStatuses
+from base.products.utils.choices import InventoryStatusChoices
 from base.users.authentication import CustomTokenAuthentication
 from base.users.models import Favorite
 from base.users.permissions import BuyerPermission
@@ -153,11 +153,11 @@ class ProductViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
             quantity=quantity,
         )
 
-        if inventory_status == InventoryStatuses.NOT_AVAILBLE:
+        if inventory_status == InventoryStatusChoices.NOT_AVAILBLE:
             return Response({"code": ProductsCodes.NOT_AVAILBLE}, status=status.HTTP_400_BAD_REQUEST)
-        elif inventory_status == InventoryStatuses.OUT_OF_STOCK:
+        elif inventory_status == InventoryStatusChoices.OUT_OF_STOCK:
             return Response({"code": ProductsCodes.OUT_OF_STOCK}, status=status.HTTP_400_BAD_REQUEST)
-        elif inventory_status == InventoryStatuses.QUANTITY_UNAVAILBLE:
+        elif inventory_status == InventoryStatusChoices.QUANTITY_UNAVAILBLE:
             return Response({"code": ProductsCodes.QUANTITY_UNAVAILBLE}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(

@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
+from base.sellers.utils.choices import InventoryRequestStatusChoices, InventoryRequestTypesChoices
 from base.utility import AbstractModel
 
 
@@ -18,6 +19,10 @@ class InventoryRequest(AbstractModel):
         on_delete=models.PROTECT,
         related_name="invenrory_requests",
         verbose_name=_("Seller"),
+    )
+    type = models.IntegerField(
+        choices=InventoryRequestTypesChoices.choices,
+        verbose_name=_("Type"),
     )
     model = models.ForeignKey(
         "base.Model",
@@ -67,9 +72,17 @@ class InventoryRequest(AbstractModel):
         3- Mark Request as Approved
         """
         if self.is_approved:
-            return False
+            return False, InventoryRequestStatusChoices.ALREADY_APPROVED
 
-        self.model.inventory_quantity += models.F("inventory_quantity") + self.quantity
+        if self.type == InventoryRequestTypesChoices.ADD:
+            self.model.inventory_quantity += models.F("inventory_quantity") + self.quantity
+        elif self.type == InventoryRequestTypesChoices.RETURN:
+            if not self.model.is_available_in_inventory(quantity=self.quantity):
+                return False, InventoryRequestStatusChoices.QUANTITY_UNAVAILBLE
+            self.model.inventory_quantity += models.F("inventory_quantity") - self.quantity
+        else:
+            return False, InventoryRequestStatusChoices.CANNOT_APPROVE
+
         self.model.save()
 
         self.approved_at = datetime.now()
@@ -77,4 +90,4 @@ class InventoryRequest(AbstractModel):
         self.is_approved = True
         self.save()
 
-        return True
+        return True, InventoryRequestStatusChoices.APPROVED

@@ -1,1 +1,1 @@
-from .inventory_statuses import InventoryStatuses
+from .inventory_status_choices import InventoryStatusChoices

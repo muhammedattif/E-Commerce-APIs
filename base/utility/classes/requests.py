@@ -15,7 +15,7 @@ class Requests:
     @classmethod
     def get_language(cls, request):
         """get language for account"""
-        default_language = Languages.AR
+        default_language = Languages.EN
         header_language = cls.get_language_from_header(request)
         if header_language:
             return header_language
