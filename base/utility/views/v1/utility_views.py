@@ -6,10 +6,10 @@ from rest_framework.response import Response
 # First Party Imports
 from base.users.authentication import AccessTokenAuthentication
 from base.users.permissions import DeveloperPermission
-from base.utility.response_codes import export_response_codes
+from base.utility.response_codes import GeneralCodes, export_response_codes
 
 
-class GenericViewSet(viewsets.GenericViewSet):
+class UtilityViewSet(viewsets.GenericViewSet):
     authentication_classes = [AccessTokenAuthentication]
     permission_classes = [DeveloperPermission]
 
@@ -21,6 +21,9 @@ class GenericViewSet(viewsets.GenericViewSet):
     def response_codes(self, *args, **kwargs):
         """Response Codes View"""
         return Response(
-            export_response_codes(),
+            {
+                "code": GeneralCodes.SUCCESS,
+                "data": export_response_codes(),
+            },
             status=status.HTTP_200_OK,
         )

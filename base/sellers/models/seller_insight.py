@@ -73,30 +73,6 @@ class SellerInsight:
             "sum"
         ]
 
-    def best_sellers_queryset(self):
-        return (
-            (self.products_queryset.annotate_total_clicks().annotate_total_inventory().annotate_total_sold())
-            .exclude(
-                total_sold=0,
-            )
-            .order_by(
-                "-total_clicks",
-                "-total_inventory",
-                "-total_sold",
-            )
-        )
-
-    def low_stock_queryset(self):
-        return (
-            (self.products_queryset.annotate_total_inventory())
-            .filter(
-                total_sold__lt=5,
-            )
-            .order_by(
-                "-total_inventory",
-            )
-        )
-
     def sales_chart(self):
         return (
             self.order_items_queryset.filter(
@@ -114,7 +90,7 @@ class SellerInsight:
                     0,
                     output_field=FloatField(),
                 ),
-                total_items=Sum((F("quantity") - F("quantity_refunded"))),
+                total_items_sold=Sum((F("quantity") - F("quantity_refunded"))),
             )
             .order_by(
                 "created_at",

@@ -25,6 +25,7 @@ from base.brands.urls import brands_router_v1
 from base.categories.urls import categories_router_v1
 from base.payment.urls import payment_router_v1
 from base.products.urls import products_router_v1
+from base.sellers.urls import seller_router_v1
 from base.users.urls import users_router_v1
 from base.utility.urls import utilities_router_v1
 
@@ -43,6 +44,8 @@ urlpatterns = [
     path("api/payment/v1/", include((payment_router_v1.urls, "payment"), namespace="payment-apis-v1")),
     # Utility APIs v1
     path("api/utilities/v1/", include((utilities_router_v1.urls, "utilities"), namespace="utilities-apis-v1")),
+    # Seller APIs v1
+    path("api/sellers/v1/", include((seller_router_v1.urls, "sellers"), namespace="sellers-apis-v1")),
 ]
 
 if settings.DEBUG:

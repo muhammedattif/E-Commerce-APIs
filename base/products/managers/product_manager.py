@@ -76,6 +76,32 @@ class ProductQuerySet(models.QuerySet):
             brand_name=brand_name,
         )
 
+    def low_stock(self):
+        return (
+            self.annotate_total_inventory()
+            .filter(
+                total_inventory__lt=5,
+            )
+            .order_by(
+                "-total_inventory",
+            )
+        )
+
+    def best_seller(self):
+        return (
+            self.annotate_total_clicks()
+            .annotate_total_inventory()
+            .annotate_total_sold()
+            .exclude(
+                total_sold=0,
+            )
+            .order_by(
+                "-total_clicks",
+                "-total_inventory",
+                "-total_sold",
+            )
+        )
+
 
 class ProductManager(models.Manager):
     def get_queryset(self):
@@ -83,6 +109,12 @@ class ProductManager(models.Manager):
 
     def popular(self):
         return self.get_queryset().popular()
+
+    def low_stock(self):
+        return self.get_queryset().low_stock()
+
+    def best_seller(self):
+        return self.get_queryset().best_seller()
 
     def annotate_lowest_price(self):
         return self.get_queryset().annotate_lowest_price()

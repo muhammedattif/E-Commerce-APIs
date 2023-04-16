@@ -9,6 +9,23 @@ from base.sellers.serializers.v1 import SellerBasicInfoSerializer
 from .product_feature_serializer import ProductFeatureSerializer
 
 
+class BestSellerProductSerializer(serializers.ModelSerializer):
+
+    total_clicks = serializers.IntegerField()
+    total_inventory = serializers.IntegerField()
+    total_sold = serializers.IntegerField()
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "image",
+            "total_clicks",
+            "total_inventory",
+            "total_sold",
+        ]
+
+
 class ProductSerializer(serializers.ModelSerializer):
 
     image = serializers.FileField()
@@ -23,6 +40,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "brand_name",
             "price",
+        ]
+
+
+class LowStockProductSerializer(ProductSerializer):
+    total_inventory = serializers.IntegerField()
+
+    class Meta(ProductSerializer.Meta):
+        fields = ProductSerializer.Meta.fields + [
+            "total_inventory",
         ]
 
 
