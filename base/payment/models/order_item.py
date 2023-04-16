@@ -6,9 +6,10 @@ from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
 from base.payment.utils.choices import OrderItemStatusChoices, OrderStatusChoices
+from base.utility.utility_models import AbstractModelWithHistory
 
 
-class OrderItem(models.Model):
+class OrderItem(AbstractModelWithHistory):
     order = models.ForeignKey(
         "base.Order",
         on_delete=models.CASCADE,
@@ -23,6 +24,7 @@ class OrderItem(models.Model):
     model = models.ForeignKey(
         "base.Model",
         verbose_name=_("Model"),
+        related_name="order_items",
         on_delete=models.RESTRICT,
     )
     price = models.FloatField(

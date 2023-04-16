@@ -1,18 +1,21 @@
 # Django Imports
 from django.db import models
-from django.db.models import IntegerField, Sum
+from django.db.models import Count, IntegerField
 from django.db.models.functions import Coalesce
 
 
 class BrandQuerySet(models.QuerySet):
     def popular(self):
+        return self.annotate_total_clicks().order_by("-total_clicks")
+
+    def annotate_total_clicks(self):
         return self.annotate(
-            clicks=Coalesce(
-                Sum("trackers__clicks"),
+            total_clicks=Coalesce(
+                Count("trackers"),
                 0,
                 output_field=IntegerField(),
             ),
-        ).order_by("-clicks")
+        )
 
 
 class BrandManager(models.Manager):
@@ -21,3 +24,6 @@ class BrandManager(models.Manager):
 
     def popular(self):
         return self.get_queryset().popular()
+
+    def annotate_total_clicks(self):
+        return self.get_queryset().annotate_total_clicks()

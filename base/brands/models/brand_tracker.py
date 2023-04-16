@@ -16,4 +16,4 @@ class BrandTracker(AbstractModel, AbstractTracker):
         verbose_name_plural = _("Brand Trackers")
 
     def __str__(self):
-        return f"User:{self.user}-Brand:{self.brand.name}-Views:{self.views}"
+        return f"User:{self.user}-Brand:{self.brand.name}"

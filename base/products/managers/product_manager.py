@@ -1,18 +1,50 @@
 # Django Imports
 from django.db import models
-from django.db.models import IntegerField, OuterRef, Subquery, Sum
+from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Sum
 from django.db.models.functions import Coalesce
+
+# First Party Imports
+from base.payment.utils.choices import OrderItemStatusChoices
 
 
 class ProductQuerySet(models.QuerySet):
     def popular(self):
+        return self.annotate_total_clicks().order_by("-total_clicks")
+
+    def annotate_total_clicks(self):
         return self.annotate(
-            clicks=Coalesce(
-                Sum("trackers__clicks"),
+            total_clicks=Coalesce(
+                Count("trackers"),
                 0,
                 output_field=IntegerField(),
             ),
-        ).order_by("-clicks")
+        )
+
+    def annotate_total_sold(self):
+        return self.annotate(
+            total_sold=Coalesce(
+                Sum(
+                    F("models__order_items__quantity") - F("models__order_items__quantity_refunded"),
+                    filter=Q(
+                        models__order_items__status__in=[
+                            OrderItemStatusChoices.PAID,
+                            OrderItemStatusChoices.REFUNDED,
+                        ],
+                    ),
+                ),
+                0,
+                output_field=IntegerField(),
+            ),
+        )
+
+    def annotate_total_inventory(self):
+        return self.annotate(
+            total_inventory=Coalesce(
+                Sum("models__inventory_quantity"),
+                0,
+                output_field=IntegerField(),
+            ),
+        )
 
     def annotate_lowest_price(self):
         # First Party Imports
@@ -57,3 +89,12 @@ class ProductManager(models.Manager):
 
     def annotate_brand_name(self):
         return self.get_queryset().annotate_brand_name()
+
+    def annotate_total_clicks(self):
+        return self.get_queryset().annotate_total_clicks()
+
+    def annotate_total_sold(self):
+        return self.get_queryset().annotate_total_sold()
+
+    def annotate_total_inventory(self):
+        return self.get_queryset().annotate_total_inventory()

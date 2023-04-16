@@ -8,7 +8,7 @@ from base.utility.utility_admin import AbstractModelAdmin
 
 @admin.register(BrandTracker)
 class BrandTrackerAdmin(AbstractModelAdmin):
-    list_display = ["id", "user", "brand", "clicks"]
+    list_display = ["id", "user", "brand"]
     list_filter = ["user", "brand"]
     readonly_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]

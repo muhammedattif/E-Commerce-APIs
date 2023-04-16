@@ -21,4 +21,4 @@ class CategoryTracker(AbstractModel, AbstractTracker):
         verbose_name_plural = _("Category Trackers")
 
     def __str__(self):
-        return f"User:{self.user}-Category:{self.category.name}-Views:{self.views}"
+        return f"User:{self.user}-Category:{self.category.name}"
