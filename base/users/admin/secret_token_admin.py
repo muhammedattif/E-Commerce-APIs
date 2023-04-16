@@ -17,6 +17,7 @@ class SecretTokenAdmin(AbstractModelAdmin):
         "lifetime",
         "expires_at",
         "key",
+        "user",
         "is_active",
         "created_at",
         "updated_at",

@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # First Party Imports
-from base.payment.models import Cart, CartItem, Order, OrderItem
+from base.payment.models import Cart, CartItem
 from base.payment.serializers.v1 import (
     AddToCartInputerializer,
     CartSerializer,
@@ -15,6 +15,7 @@ from base.payment.serializers.v1 import (
     OrderSerializer,
     UpdateCartItemInputerializer,
 )
+from base.payment.utils.result_choices import CheckoutResultChoices
 from base.users.authentication import CustomTokenAuthentication
 from base.users.permissions import BuyerPermission
 from base.utility.classes import Requests
@@ -211,48 +212,28 @@ class CartViewSet(viewsets.GenericViewSet):
         address = input_serializer.address
         cart, created = Cart.objects.get_or_create(user=self.request.user)
 
-        # Get cart items
-        cart_items = cart.items.select_related("model", "product")
-        if not cart_items:
+        order, result_status, extra_dict = cart.checkout(address=address)
+
+        if result_status == CheckoutResultChoices.EMPTY_CART:
             return Response({"code": PaymentCodes.EMPTY_CART}, status=status.HTTP_400_BAD_REQUEST)
+        elif result_status == CheckoutResultChoices.ITEM_OUT_OF_STOCK:
+            response = {
+                "code": ProductsCodes.OUT_OF_STOCK,
+                **extra_dict,
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        elif result_status == CheckoutResultChoices.ITEM_QUANTITY_UNAVAILABLE:
+            response = {
+                "code": ProductsCodes.QUANTITY_UNAVAILBLE,
+                **extra_dict,
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if all items quantity available
-        # Cart items may be added for a long time
-        for item in cart_items:
-
-            if item.model.is_out_of_stock:
-                response = {
-                    "code": ProductsCodes.OUT_OF_STOCK,
-                    "product_name": item.product.name,
-                }
-                return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-            elif not item.is_available_in_inventory:
-                response = {
-                    "code": ProductsCodes.QUANTITY_UNAVAILBLE,
-                    "product_name": item.product.name,
-                    "available_quantity": item.model.inventory_quantity,
-                }
-                return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
-        order = Order.objects.create(
-            user=self.request.user,
-            total=cart.total,
-            sub_total=cart.sub_total,
-            discount=cart.discount,
-            taxes=cart.taxes,
-            address=address,
+        serializer = OrderSerializer(
+            order,
+            many=False,
+            context={"lang": Requests.get_language(self.request)},
         )
-        for item in cart_items:
-            OrderItem.objects.create(
-                product=item.product,
-                order=order,
-                model=item.model,
-                price=item.model.price,
-                quantity=item.quantity,
-            )
-
-        serializer = OrderSerializer(order, many=False, context={"lang": Requests.get_language(self.request)})
         return Response(
             {
                 "code": GeneralCodes.SUCCESS,

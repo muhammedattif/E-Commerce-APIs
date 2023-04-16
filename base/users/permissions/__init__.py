@@ -1,3 +1,5 @@
 from .buyer_permission import BuyerPermission
 from .seller_permission import SellerPermission
 from .staff_user_permission_mixin import StafUserPermissiondMixin
+from .developer_permission import DeveloperPermission
+from .is_authenticated_permission import IsAuthenticatedPermission

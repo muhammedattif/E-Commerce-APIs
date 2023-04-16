@@ -34,7 +34,7 @@ class UsersCodes:
 
     PREFIX = "US"
     BASE_NUM = 2
-
+    # TODO: To be refactored
     INVALID_CREDENTIALS = build_code(prefix=PREFIX, base_num=BASE_NUM, code="0", model_prefix="US")
     INACTIVE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="1", model_prefix="US")
     SUSPENDED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="2", model_prefix="US")
@@ -46,6 +46,11 @@ class UsersCodes:
     INVALID_PASSWORD_CRITERIA = build_code(prefix=PREFIX, base_num=BASE_NUM, code="8", model_prefix="US")
     INVALID_TOKEN = build_code(prefix=PREFIX, base_num=BASE_NUM, code="9", model_prefix="TO")
     INVALID_ACCOUNT_TYPE = build_code(prefix=PREFIX, base_num=BASE_NUM, code="10", model_prefix="US")
+    INVALID_AUTH = build_code(prefix=PREFIX, base_num=BASE_NUM, code="11", model_prefix="TO")
+    EMAIL_NOT_VERIFIED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="12", model_prefix="US")
+    NO_CREDENTIALS_PROVIDED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="13", model_prefix="AU")
+    INVALID_HEADER = build_code(prefix=PREFIX, base_num=BASE_NUM, code="14", model_prefix="AU")
+    NOT_AUTHENTICATED = build_code(prefix=PREFIX, base_num=BASE_NUM, code="15", model_prefix="AU")
 
 
 class ProductsCodes:

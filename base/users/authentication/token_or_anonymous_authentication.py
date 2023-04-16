@@ -1,14 +1,13 @@
 # Django Imports
-
-# Django Imports
 from django.contrib.auth.models import AnonymousUser
 
 # REST Framework Imports
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
+from .custom_token_authentication import CustomTokenAuthentication
 
-class TokenOrAnonymousAuthentication(TokenAuthentication):
+
+class TokenOrAnonymousAuthentication(CustomTokenAuthentication):
     """TokenOrAnonymousAuthentication class"""
 
     def authenticate(self, request):

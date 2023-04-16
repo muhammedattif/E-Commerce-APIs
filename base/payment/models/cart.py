@@ -2,13 +2,17 @@
 
 # Django Imports
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.db.models import F, FloatField, Sum
 from django.db.models.functions import Coalesce
 from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
+from base.payment.utils.result_choices import CheckoutResultChoices
 from base.utility.utility_models import AbstractModelWithHistory
+
+from .order import Order
+from .order_item import OrderItem
 
 
 class Cart(AbstractModelWithHistory):
@@ -86,3 +90,48 @@ class Cart(AbstractModelWithHistory):
         self.items.all().delete()
         self.save()
         return True
+
+    @transaction.atomic
+    def checkout(self, address):
+        order = None
+        extra_dict = {}
+
+        # Get cart items
+        cart_items = self.items.select_related("model", "product")
+        if not cart_items:
+            return order, CheckoutResultChoices.EMPTY_CART, extra_dict
+
+        # Check if all items quantity available
+        # Cart items may be added for a long time
+        for item in cart_items:
+            if item.model.is_out_of_stock:
+                extra_dict = {
+                    "product_name": item.product.name,
+                }
+                return order, CheckoutResultChoices.ITEM_OUT_OF_STOCK, extra_dict
+
+            elif not item.is_available_in_inventory:
+                extra_dict = {
+                    "product_name": item.product.name,
+                    "available_quantity": item.model.inventory_quantity,
+                }
+                return order, CheckoutResultChoices.ITEM_QUANTITY_UNAVAILABLE, extra_dict
+
+        # Copy Cart Data and Items and create new Order
+        order = Order.objects.create(
+            user=self.request.user,
+            total=self.total,
+            sub_total=self.sub_total,
+            discount=self.discount,
+            taxes=self.taxes,
+            address=address,
+        )
+        for item in cart_items:
+            OrderItem.objects.create(
+                product=item.product,
+                order=order,
+                model=item.model,
+                price=item.model.price,
+                quantity=item.quantity,
+            )
+        return order, CheckoutResultChoices.SUCCESS, extra_dict

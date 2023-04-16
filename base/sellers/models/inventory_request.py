@@ -1,10 +1,8 @@
-# Python Standard Library Imports
-from datetime import datetime
-
 # Django Imports
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
@@ -92,7 +90,7 @@ class InventoryRequest(AbstractModel):
 
         self.model.save()
 
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.status = InventoryRequestStatusChoices.APPROVED
         self.save()
@@ -112,7 +110,7 @@ class InventoryRequest(AbstractModel):
         if self.status != InventoryRequestStatusChoices.SUBMITTED:
             return False, InventoryRequestStatusChoices.CANNOT_DECLINE
 
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.status = InventoryRequestStatusChoices.DECLINED
         self.save()

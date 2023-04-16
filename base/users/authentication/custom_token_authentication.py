@@ -3,21 +3,25 @@ from django.utils.translation import gettext_lazy as _
 
 # REST Framework Imports
 from rest_framework import exceptions
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
+
+# First Party Imports
+from base.utility.response_codes import UsersCodes
+
+from .abstract_auth import AbstractAuth
 
 
-class CustomTokenAuthentication(TokenAuthentication):
+class CustomTokenAuthentication(AbstractAuth):
     """CustomTokenAuthentication class"""
 
     def authenticate_credentials(self, key):
-        user, token = super().authenticate_credentials(key)
-
-        if user.is_suspended:
-            msg = _("User has been temporarily blocked due to violating the rules.")
-            raise exceptions.AuthenticationFailed(msg)
-
-        if not user.is_email_verified:
-            msg = _("User's email is not verified.")
-            raise exceptions.AuthenticationFailed(msg)
-
-        return user, token
+        token = Token.objects.select_related("user").filter(key=key).first()
+        if not token:
+            msg = _("Invalid token.")
+            raise exceptions.AuthenticationFailed(
+                detail={
+                    "message": msg,
+                    "code": UsersCodes.INVALID_AUTH,
+                },
+            )
+        return (token.user, token)

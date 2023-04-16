@@ -1,10 +1,8 @@
-# Python Standard Library Imports
-from datetime import datetime
-
 # Django Imports
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # Other Third Party Imports
@@ -221,7 +219,7 @@ class AbstractModelWithApproval(AbstractModel):
                 return False
 
         self.action = ApprovalActionChoices.APPROVED
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.save()
         self.send_approval_email()
@@ -232,7 +230,7 @@ class AbstractModelWithApproval(AbstractModel):
             return False
 
         self.action = ApprovalActionChoices.DECLINED
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.save()
         self.send_declined_email()

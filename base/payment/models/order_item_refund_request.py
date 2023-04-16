@@ -1,9 +1,7 @@
-# Python Standard Library Imports
-from datetime import datetime
-
 # Django Imports
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
@@ -78,7 +76,7 @@ class OrderItemRefundRequest(AbstractModelWithHistory):
         self.item.save()
 
         self.status = ApprovalActionChoices.APPROVED
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.save()
         return True
@@ -92,7 +90,7 @@ class OrderItemRefundRequest(AbstractModelWithHistory):
         if self.status != ApprovalActionChoices.SUBMITTED:
             return False
         self.status = ApprovalActionChoices.DECLINED
-        self.action_taken_at = datetime.now()
+        self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.save()
         return True

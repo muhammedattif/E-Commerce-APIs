@@ -1,2 +1,3 @@
 from .custom_token_authentication import CustomTokenAuthentication
 from .token_or_anonymous_authentication import TokenOrAnonymousAuthentication
+from .access_token_auth import AccessTokenAuthentication
