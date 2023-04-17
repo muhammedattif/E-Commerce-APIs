@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 # First Party Imports
 from base.sellers.utils.choices import InventoryRequestStatusChoices, InventoryRequestTypesChoices
+from base.sellers.utils.result_choices import InventoryRequestResultChoices
 from base.utility import AbstractModel
 
 
@@ -73,19 +74,19 @@ class InventoryRequest(AbstractModel):
         3- Mark Request as Approved
         """
         if self.status == InventoryRequestStatusChoices.APPROVED:
-            return False, InventoryRequestStatusChoices.ALREADY_APPROVED
+            return False, InventoryRequestResultChoices.ALREADY_APPROVED
 
         if self.status == InventoryRequestStatusChoices.DECLINED:
-            return False, InventoryRequestStatusChoices.ALREADY_DECLINED
+            return False, InventoryRequestResultChoices.ALREADY_DECLINED
 
         if self.status != InventoryRequestStatusChoices.SUBMITTED:
-            return False, InventoryRequestStatusChoices.CANNOT_DECLINE
+            return False, InventoryRequestResultChoices.CANNOT_DECLINE
 
         if self.type == InventoryRequestTypesChoices.ADD:
             self.model.inventory_quantity += models.F("inventory_quantity") + self.quantity
         elif self.type == InventoryRequestTypesChoices.RETURN:
             if not self.model.is_available_in_inventory(quantity=self.quantity):
-                return False, InventoryRequestStatusChoices.QUANTITY_UNAVAILBLE
+                return False, InventoryRequestResultChoices.QUANTITY_UNAVAILBLE
             self.model.inventory_quantity += models.F("inventory_quantity") - self.quantity
 
         self.model.save()
@@ -95,24 +96,24 @@ class InventoryRequest(AbstractModel):
         self.status = InventoryRequestStatusChoices.APPROVED
         self.save()
 
-        return True, InventoryRequestStatusChoices.APPROVED
+        return True, InventoryRequestResultChoices.APPROVED
 
     def decline(self, action_user):
         """
         Decline Inventory Request:
         """
         if self.status == InventoryRequestStatusChoices.APPROVED:
-            return False, InventoryRequestStatusChoices.ALREADY_APPROVED
+            return False, InventoryRequestResultChoices.ALREADY_APPROVED
 
         if self.status == InventoryRequestStatusChoices.DECLINED:
-            return False, InventoryRequestStatusChoices.ALREADY_DECLINED
+            return False, InventoryRequestResultChoices.ALREADY_DECLINED
 
         if self.status != InventoryRequestStatusChoices.SUBMITTED:
-            return False, InventoryRequestStatusChoices.CANNOT_DECLINE
+            return False, InventoryRequestResultChoices.CANNOT_DECLINE
 
         self.action_taken_at = timezone.now()
         self.action_taken_by = action_user
         self.status = InventoryRequestStatusChoices.DECLINED
         self.save()
 
-        return True, InventoryRequestStatusChoices.DECLINED
+        return True, InventoryRequestResultChoices.DECLINED
