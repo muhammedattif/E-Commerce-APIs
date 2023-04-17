@@ -262,3 +262,7 @@ class Order(AbstractModelWithHistory):
                 self.send_order_paid_email()
 
         return True
+
+    @property
+    def is_first_order(self):
+        return not self.__class__.filter(user=self.user).exclude(id=self.id).exists()

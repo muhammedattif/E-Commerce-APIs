@@ -42,3 +42,4 @@ def order_pre_save_signal(sender, instance, *args, **kwargs):
 
             instance.update_order_items_status()
             instance.dispatch_order_tracking()
+            instance.user.loyalty_program.reward_pending_referral_points(order=instance)

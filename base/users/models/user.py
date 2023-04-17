@@ -4,8 +4,6 @@ from smtplib import SMTPException
 # Django Imports
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.db.models import IntegerField, Sum
-from django.db.models.functions import Coalesce
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
@@ -18,9 +16,6 @@ from base.users.emails import ActivationEmail, ConfirmationEmail
 from base.users.fields import LowercaseEmailField
 from base.users.managers import UserManager
 from base.utility.utility_models import AbstractModel
-
-from .loyalty_program import LoyaltyProgram
-from .referral import Referral
 
 
 class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
@@ -118,41 +113,9 @@ class User(AbstractModel, AbstractBaseUser, PermissionsMixin):
         self.delete_previous_tokens()
         return Token.objects.create(user=self)
 
-    def get_total_referral_points(self):
-        return self.loyalty_program.referrals.filter(is_active=True).aggregate(
-            sum=Coalesce(
-                Sum("points"),
-                0,
-                output_field=IntegerField(),
-            ),
-        )["sum"]
+    @property
+    def referral_instance(self):
+        """Returns referral instance"""
+        from .referral import Referral
 
-    def get_not_claimed_referral_points(self):
-        claimed_points = self.loyalty_program.claimed_points
-        points_to_be_claimed = self.loyalty_program.referrals.filter(
-            is_first_item_purchased=True,
-            is_active=True,
-        ).aggregate(
-            sum=Coalesce(
-                Sum("points"),
-                0,
-                output_field=IntegerField(),
-            ),
-        )[
-            "sum"
-        ]
-        return points_to_be_claimed - claimed_points
-
-    def record_referral(self, referral_code):
-        if not referral_code:
-            return False
-
-        referrer = User.objects.filter(referral_code=referral_code)
-        loyalty_program, created = LoyaltyProgram.objects.get_or_create(
-            referrer=referrer,
-        )
-        Referral.objects.create(
-            loyalty_program=loyalty_program,
-            referent=self,
-        )
-        return True
+        return Referral.objects.filter(referent=self).first()

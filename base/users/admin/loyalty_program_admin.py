@@ -13,8 +13,8 @@ class ReferralInline(admin.StackedInline):
 
 @admin.register(LoyaltyProgram)
 class LoyaltyProgramAdmin(AbstractModelAdmin):
-    list_display = ["referrer", "claimed_points", "created_at"]
-    list_filter = ["referrer", "referrals__referent", "claimed_points", "created_at"]
-    readonly_fields = ["claimed_points", "created_at", "updated_at"]
+    list_display = ["referrer", "claimed_points", "used_points", "created_at"]
+    list_filter = ["referrer", "referrals__referent", "claimed_points", "used_points", "created_at"]
+    readonly_fields = ["claimed_points", "used_points", "created_at", "updated_at"]
     ordering = ["-created_at"]
     inlines = [ReferralInline]

@@ -18,22 +18,25 @@ class Referral(AbstractModel):
         related_name="referrals",
         verbose_name=_("Loyalty Program"),
     )
-
     referent = models.OneToOneField(
         "base.User",
         on_delete=models.CASCADE,
         related_name="referral",
         verbose_name=_("Referent"),
     )
-
     points = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Points"),
         help_text=_("Points Claimed"),
     )
-    is_first_item_purchased = models.BooleanField(
+    is_claimed = models.BooleanField(
         default=False,
-        verbose_name=_("Is First Item Purchased?"),
+        verbose_name=_("Is Claimed?"),
+    )
+    claimed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Claimed At"),
     )
 
     class Meta:
@@ -52,3 +55,19 @@ class Referral(AbstractModel):
 
         if self.loyalty_program.referrer == self.referent:
             raise ValidationError(_("Referrer cannot be referred."))
+
+    def set_points(self):
+        # First Party Imports
+        from base.utility.models import AppConfiguration
+
+        self.points = AppConfiguration.get_referral_points()
+        self.save()
+        return True
+
+    def update_loyalty_program_claimed_points(self):
+        try:
+            self.loyalty_program.claimed_points += self.points
+            self.loyalty_program.save()
+        except ValidationError:
+            return False
+        return True
